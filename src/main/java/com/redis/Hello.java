@@ -16,21 +16,23 @@ import com.redis.config.RedisUtils;
 public class Hello {
 	private @Autowired RedisUtils redisUtils;
 
+	/**
+	 * 在test中写的多线程测试用例，数据处理存在问题，可能和测试包BUG有关，这里放到应用中测试。 postman:
+	 * http://localhost:18555/hello
+	 **/
 	@RequestMapping("/hello")
 	public String sayHello() {
+		test1();
 
-		 test1();
-		/*for (int i = 0; i < 10; i++) {
-			List<String> list = new ArrayList<String>();
-			for (int k = 0; k < 5000; k++) {
-				list.add(k + ":bread");
-			}
-			new TestThread(list).start();
-		}*/
+		/*
+		 * for (int i = 0; i < 10; i++) { List<String> list = new
+		 * ArrayList<String>(); for (int k = 0; k < 5000; k++) { list.add(k +
+		 * ":bread"); } new TestThread(list).start(); }
+		 */
 
 		return "hello world";
 	}
-	
+
 	public void test1() {
 		ExecutorService executorService = Executors.newFixedThreadPool(10);
 		for (int i = 0; i < 10000; i++) {
@@ -49,7 +51,7 @@ public class Hello {
 			});
 		}
 	}
-	
+
 	private class TestThread extends Thread {
 		List<String> list = null;
 
@@ -58,18 +60,20 @@ public class Hello {
 		}
 
 		public void run() {
-			for (int i=0;i<list.size();i++) {
-				String b = list.get(i) ;
+			for (int i = 0; i < list.size(); i++) {
+				String b = list.get(i);
 				System.out.println(b);
 				Date date = new Date();
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
 				String time = sdf.format(date);
 				try {
 					// 每次睡眠一个随机时间
-					redisUtils.store(Thread.currentThread().getName() +":"+ b, time, 1000 * 60 * 5);
-					//Thread.sleep((int) (Math.random() * 5000));
-					//String foo = redisUtils.get(Thread.currentThread().getName() +":"+ b);
-					//System.out.println("【输出>>>>】key:" + Thread.currentThread().getName() + "<>" + foo);
+					redisUtils.store(Thread.currentThread().getName() + ":" + b, time, 1000 * 60 * 5);
+					// Thread.sleep((int) (Math.random() * 5000));
+					// String foo =
+					// redisUtils.get(Thread.currentThread().getName() +":"+ b);
+					// System.out.println("【输出>>>>】key:" +
+					// Thread.currentThread().getName() + "<>" + foo);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
